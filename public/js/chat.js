@@ -1,3 +1,13 @@
+/**
+ * chat.js – AI chat with Google Search fallback + Firebase Analytics
+ */
+
+/**
+ * Build a safe HTML bubble with optional Google Search link.
+ * @param {string} type - 'user' or 'ai'
+ * @param {string} text - Message text
+ * @param {boolean} withLink - Append Google Search fallback
+ */
 function buildBubble(type, text, withLink = false) {
   const q = encodeURIComponent(text.slice(0, 60) + ' ' + currentEvent);
   const safeTxt = sanitize(text).replace(/\n/g, '<br>');
@@ -7,6 +17,12 @@ function buildBubble(type, text, withLink = false) {
   return `${safeTxt}${linkHtml}`;
 }
 
+/**
+ * Append a message bubble to the chat.
+ * @param {string} type - 'user' or 'ai'
+ * @param {string} text - Message text
+ * @param {boolean} withLink - Show Google Search link
+ */
 function addMsg(type, text, withLink = false) {
   const msgs = document.getElementById('messages');
   if (!msgs) return;
@@ -20,6 +36,10 @@ function addMsg(type, text, withLink = false) {
   msgs.scrollTop = msgs.scrollHeight;
 }
 
+/**
+ * Show typing indicator and return its ID.
+ * @returns {string|null} Element ID of typing indicator
+ */
 function showTyping() {
   const msgs = document.getElementById('messages');
   if (!msgs) return null;
@@ -40,18 +60,29 @@ function showTyping() {
   return id;
 }
 
+/**
+ * Remove typing indicator.
+ * @param {string|null} id - Element ID to remove
+ */
 function removeTyping(id) {
   if (!id) return;
   const el = document.getElementById(id);
   if (el) el.remove();
 }
 
+/**
+ * Fill chat input with suggestion text and send.
+ * @param {string} text - Suggestion to send
+ */
 function askSug(text) {
   const input = document.getElementById('chatInput');
   if (input) { input.value = text; input.focus(); }
   sendMsg();
 }
 
+/**
+ * Send a chat message to the EventMind AI.
+ */
 async function sendMsg() {
   const input = document.getElementById('chatInput');
   const btn = document.getElementById('sendBtn');
@@ -66,6 +97,11 @@ async function sendMsg() {
 
   btn.disabled = true;
   const typingId = showTyping();
+
+  // Firebase Analytics — track chat sent
+  if (typeof logEvent === 'function') {
+    logEvent('chat_message_sent', { message_length: text.length, event: currentEvent });
+  }
 
   const { chatContext } = getCurrentData();
   const systemPrompt = `You are EventMind, a helpful assistant for ${currentEvent}.
@@ -103,6 +139,9 @@ ${chatContext}`;
   }
 }
 
+/**
+ * Initialise chat with a welcome message and quick-reply suggestions.
+ */
 function initChat() {
   const msgs = document.getElementById('messages');
   if (!msgs) return;
@@ -122,4 +161,9 @@ function initChat() {
       </div>
     </div>`;
   msgs.appendChild(div);
+
+  // Analytics - page view
+  if (typeof logEvent === 'function') {
+    logEvent('page_view', { event: currentEvent });
+  }
 }

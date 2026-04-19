@@ -1,16 +1,32 @@
 {
   "name": "eventmind",
   "version": "1.0.0",
-  "description": "AI Event Companion – PromptWars Virtual 2026",
+  "description": "AI Event Companion - PromptWars Virtual 2026",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "jest --coverage --forceExit",
+    "test:ci": "jest --coverage --ci --forceExit"
   },
   "dependencies": {
+    "compression": "^1.7.4",
     "dotenv": "^16.6.1",
     "express": "^4.19.2"
   },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "supertest": "^7.0.0"
+  },
   "engines": {
     "node": ">=18"
+  },
+  "jest": {
+    "projects": [
+      { "displayName": "server", "testEnvironment": "node", "testMatch": ["**/tests/server.test.js"] },
+      { "displayName": "frontend", "testEnvironment": "jsdom", "testMatch": ["**/tests/frontend.test.js"] },
+      { "displayName": "firebase", "testEnvironment": "node", "testMatch": ["**/tests/firebase.test.js"] }
+    ],
+    "collectCoverageFrom": ["server.js", "public/js/**/*.js"]
   }
 }

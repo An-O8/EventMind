@@ -2,110 +2,121 @@
 
 ---
 
-## Prerequisites
+## Live Deployment
 
-Before you begin, make sure the following are ready:
+EventMind is deployed on Railway:
+**https://eventmind-production.up.railway.app**
+
+---
+
+## Option A — Deploy on Railway (Recommended)
+
+Railway reads your `Dockerfile` automatically and handles everything.
+
+### Prerequisites
+- [Railway CLI](https://docs.railway.app/develop/cli) or use the Railway dashboard
+- A Groq API key (get one at [console.groq.com](https://console.groq.com))
+
+### Steps
+
+**1. Push to GitHub**
+```bash
+git add .
+git commit -m "deploy"
+git push
+```
+
+**2. Connect to Railway**
+- Go to [railway.app](https://railway.app) → New Project → Deploy from GitHub repo
+- Select `An-O8/EventMind`
+
+**3. Set environment variable**
+- In Railway dashboard → Variables → Add:
+  ```
+  GROQ_API_KEY=your_api_key_here
+  ```
+
+**4. Done** — Railway builds and deploys automatically on every push.
+
+---
+
+## Option B — Deploy on Google Cloud Run
+
+### Prerequisites
 
 - [Google Cloud CLI](https://cloud.google.com/sdk/docs/install) installed and authenticated
 - [Docker](https://docs.docker.com/get-docker/) installed
-- [Git](https://git-scm.com/) installed and configured
-- An active GitHub account
-- A Groq API key (get one at [console.groq.com](https://console.groq.com))
+- An active GCP project with billing enabled
 
----
-
-## Step 1 — Push to GitHub
-
-Create a new **public** repository on GitHub first, then:
-
-```bash
-git init
-git add .
-git commit -m "initial commit"
-git branch -M main
-git remote add origin https://github.com/An_O8/eventmind.git
-git push -u origin main
-```
-
-Keep everything in a single branch (`main`). Repository size must stay under 10 MB.
-
----
-
-## Step 2 — Set Up Google Cloud
+### Steps
 
 ```bash
 # Authenticate
 gcloud auth login
 
-# Create a new project
-gcloud projects create eventmind-2026 --name="EventMind"
-gcloud config set project eventmind-2026
+# Set your project
+gcloud config set project YOUR_PROJECT_ID
 
 # Enable required APIs
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com containerregistry.googleapis.com
-```
 
----
-
-## Step 3 — Deploy to Cloud Run
-
-Run this from the project root. Replace the API key with your actual key.
-
-```bash
+# Deploy
 gcloud run deploy eventmind \
   --source . \
-  --region us-central1 \
+  --region asia-south1 \
   --allow-unauthenticated \
   --set-env-vars GROQ_API_KEY=your_api_key_here \
   --memory 256Mi \
   --platform managed
 ```
 
-Wait about 2 minutes. When it finishes you'll see:
-
+When it finishes you'll see:
 ```
-Service URL: https://eventmind-XXXXXXXXXXXX-uc.a.run.app
+Service URL: https://eventmind-XXXXXXXXXXXX-as.a.run.app
 ```
-
-That's your Cloud Run URL — paste it into the submission form.
 
 ---
 
-## Step 4 — Verify
+## Environment Variables
 
-Open the URL in your browser. The full app should load. Type something in the chat — it should respond through the server-side proxy.
+| Variable | Required | Description |
+|---|---|---|
+| `GROQ_API_KEY` | ✅ Yes | Groq API key for AI chat |
+| `PORT` | No | Defaults to 8080 |
+
+---
+
+## Running Tests Before Deploy
+
+```bash
+npm install
+npm test
+```
+
+All 58 tests should pass before pushing.
 
 ---
 
 ## Troubleshooting
 
-**Permission denied when pushing to registry:**
+**Chat not responding after deploy:**
 ```bash
-gcloud auth configure-docker
+# Check env vars are set
+gcloud run services describe eventmind --region asia-south1
 ```
 
-**"API not enabled" error:**
+**Update API key without redeploying (Cloud Run):**
 ```bash
-gcloud services enable run.googleapis.com cloudbuild.googleapis.com
+gcloud run services update eventmind --region asia-south1 --set-env-vars GROQ_API_KEY=new_key_here
 ```
 
-**Chat not responding after deploy — check env vars:**
+**View live logs (Cloud Run):**
 ```bash
-gcloud run services describe eventmind --region us-central1
-```
-
-**Update the API key without redeploying:**
-```bash
-gcloud run services update eventmind --region us-central1 --set-env-vars GROQ_API_KEY=new_key_here
-```
-
-**View live logs:**
-```bash
-gcloud run services logs read eventmind --region us-central1
+gcloud run services logs read eventmind --region asia-south1
 ```
 
 ---
 
 ## Why the Proxy Matters
 
-Calling the Groq API directly from the browser is blocked by CORS and it would expose your API key to anyone who opens DevTools. The fix is straightforward: the browser sends requests to `/api/chat` on the same domain (no CORS issue), and `server.js` forwards them to Groq with the key attached server-side. The key never leaves the server.
+Calling the Groq API directly from the browser exposes your API key to anyone who opens DevTools. The fix: the browser sends requests to `/api/chat` on the same domain, and `server.js` forwards them to Groq with the key attached server-side. The key never leaves the server.

@@ -1,6 +1,14 @@
+/**
+ * feedback.js – Session feedback with Firebase Firestore persistence
+ */
+
 let selectedRating = 0;
 const MAX_CHARS = 280;
 
+/**
+ * Set star rating and update UI.
+ * @param {number} n - Rating 1-5
+ */
 function rateStar(n) {
   selectedRating = n;
   const labels = ['Terrible', 'Poor', 'Okay', 'Good', 'Excellent'];
@@ -10,8 +18,16 @@ function rateStar(n) {
   });
   const ratingLabel = document.getElementById('ratingLabel');
   if (ratingLabel) ratingLabel.textContent = `Rating: ${n} out of 5 — ${labels[n - 1]}`;
+
+  // Analytics
+  if (typeof logEvent === 'function') {
+    logEvent('star_rating_selected', { rating: n, event: currentEvent });
+  }
 }
 
+/**
+ * Update character counter as user types.
+ */
 function updateCharCount() {
   const ta = document.getElementById('feedbackText');
   const counter = document.getElementById('charCount');
@@ -21,10 +37,36 @@ function updateCharCount() {
   counter.style.color = remaining < 30 ? 'var(--accent)' : 'var(--muted)';
 }
 
-function submitFeedback() {
+/**
+ * Submit feedback — saves to Firebase Firestore + shows toast.
+ */
+async function submitFeedback() {
   if (!selectedRating) { showToast('Please select a star rating first ⭐'); return; }
-  showToast('Feedback submitted! Thank you 🙏');
+
   const ta = document.getElementById('feedbackText');
+  const comment = ta ? ta.value.trim() : '';
+
+  // Save to Firestore if Firebase is ready
+  if (typeof saveFeedback === 'function') {
+    try {
+      const eventId = (currentEvent || 'default').replace(/\s+/g, '-').toLowerCase();
+      await saveFeedback(eventId, 'current-session', {
+        rating: selectedRating,
+        comment: comment,
+      });
+    } catch (err) {
+      console.warn('Firestore save failed (non-blocking):', err.message);
+    }
+  }
+
+  // Track in Analytics
+  if (typeof logEvent === 'function') {
+    logEvent('feedback_submitted', { rating: selectedRating, event: currentEvent });
+  }
+
+  showToast('Feedback submitted! Thank you 🙏');
+
+  // Reset UI
   const counter = document.getElementById('charCount');
   if (ta) ta.value = '';
   if (counter) counter.textContent = `${MAX_CHARS} chars left`;
@@ -37,6 +79,9 @@ function submitFeedback() {
   if (ratingLabel) ratingLabel.textContent = 'No rating selected';
 }
 
+/**
+ * Render the feedback card UI.
+ */
 function renderFeedback() {
   const card = document.getElementById('feedbackCard');
   if (!card) return;
