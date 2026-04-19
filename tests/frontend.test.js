@@ -1,9 +1,3 @@
-/**
- * EventMind – Frontend Tests
- * Tests actual functions from utils.js, feedback.js, chat.js
- */
-
-// ─── Mock browser globals ─────────────────────────────────────────────────────
 let toastMessages = [];
 global.window = { open: jest.fn(), location: { search: "" } };
 global.URLSearchParams = class {
@@ -11,8 +5,6 @@ global.URLSearchParams = class {
   get(k) { const m = this._s.match(new RegExp(`[?&]${k}=([^&]*)`)); return m ? m[1] : null; }
 };
 
-// ─── Load utils.js ────────────────────────────────────────────────────────────
-// We extract and test the pure functions directly
 const EVENT_DATA = {
   'TechFest 2026': {
     date: 'Apr 18 · IIT Delhi',
@@ -116,9 +108,6 @@ beforeEach(() => {
   `;
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 1. sanitize
-// ─────────────────────────────────────────────────────────────────────────────
 describe("sanitize()", () => {
   test("escapes < and >", () => {
     expect(sanitize("<b>bold</b>")).toContain("&lt;b&gt;");
@@ -139,9 +128,6 @@ describe("sanitize()", () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 2. getCurrentData
-// ─────────────────────────────────────────────────────────────────────────────
 describe("getCurrentData()", () => {
   test("returns TechFest 2026 by default", () => {
     currentEvent = 'TechFest 2026';
@@ -183,9 +169,6 @@ describe("getCurrentData()", () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 3. EVENT_DATA completeness
-// ─────────────────────────────────────────────────────────────────────────────
 describe("EVENT_DATA", () => {
   test("contains TechFest 2026", () => {
     expect(EVENT_DATA['TechFest 2026']).toBeDefined();
@@ -205,9 +188,6 @@ describe("EVENT_DATA", () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 4. rateStar
-// ─────────────────────────────────────────────────────────────────────────────
 describe("rateStar()", () => {
   test("sets selectedRating to given value", () => {
     rateStar(4);
@@ -244,9 +224,6 @@ describe("rateStar()", () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 5. updateCharCount
-// ─────────────────────────────────────────────────────────────────────────────
 describe("updateCharCount()", () => {
   test("shows full remaining chars when empty", () => {
     document.getElementById('feedbackText').value = '';
@@ -265,9 +242,6 @@ describe("updateCharCount()", () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 6. submitFeedback
-// ─────────────────────────────────────────────────────────────────────────────
 describe("submitFeedback()", () => {
   test("shows error toast if no rating selected", () => {
     selectedRating = 0;
@@ -310,9 +284,6 @@ describe("submitFeedback()", () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 7. buildBubble
-// ─────────────────────────────────────────────────────────────────────────────
 describe("buildBubble()", () => {
   test("returns sanitized text", () => {
     const out = buildBubble('user', 'Hello World');
@@ -346,9 +317,6 @@ describe("buildBubble()", () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 8. showToast
-// ─────────────────────────────────────────────────────────────────────────────
 describe("showToast()", () => {
   test("adds message to toast array", () => {
     showToast('Test message');

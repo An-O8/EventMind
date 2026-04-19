@@ -1,6 +1,3 @@
-/**
- * EventMind – Firebase Tests
- */
 const mockAdd = jest.fn().mockResolvedValue({ id: "doc123" });
 const mockSet = jest.fn().mockResolvedValue(undefined);
 const mockOnSnapshot = jest.fn();
