@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="description" content="EventMind – Your AI-powered companion for TechFest 2026. Get session schedules, venue navigation, live translation, and networking tools."/>
+  <meta name="theme-color" content="#1a1208"/>
+  <title>EventMind – AI Event Companion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/chat.css"/>
+</head>
+<body>
+
+<div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<nav role="navigation" aria-label="Main navigation">
+  <div class="nav-logo" aria-label="EventMind home">Event<span>Mind</span></div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <a href="organizer.html" style="font-size:12px;color:rgba(245,240,235,0.6);text-decoration:none;font-weight:600;transition:color 0.15s" onmouseover="this.style.color='#f5f0eb'" onmouseout="this.style.color='rgba(245,240,235,0.6)'">⚙️ Organizer setup</a>
+    <div class="nav-event" aria-live="polite">
+      <strong id="navEventName">TechFest 2026</strong>
+      IIT Delhi · Apr 18
+    </div>
+  </div>
+</nav>
+
+<div class="hero" role="banner">
+  <div class="hero-label" aria-hidden="true">AI Event Companion</div>
+  <h1>Your Smart Guide<br/>to Every Moment</h1>
+  <p>Ask about sessions, find your way around, connect with people — all here.</p>
+  <div class="event-selector" role="group" aria-label="Select event">
+    <div class="event-pill active" onclick="selectEvent(this,'TechFest 2026')" role="button" tabindex="0" aria-pressed="true" onkeydown="if(event.key==='Enter'||event.key===' ')selectEvent(this,'TechFest 2026')">🎓 TechFest 2026</div>
+    <div class="event-pill" onclick="selectEvent(this,'Startup Summit')" role="button" tabindex="0" aria-pressed="false" onkeydown="if(event.key==='Enter'||event.key===' ')selectEvent(this,'Startup Summit')">🚀 Startup Summit</div>
+    <div class="event-pill" onclick="selectEvent(this,'Music Fest')" role="button" tabindex="0" aria-pressed="false" onkeydown="if(event.key==='Enter'||event.key===' ')selectEvent(this,'Music Fest')">🎵 Music Fest</div>
+    <div class="event-pill" onclick="selectEvent(this,'Job Fair')" role="button" tabindex="0" aria-pressed="false" onkeydown="if(event.key==='Enter'||event.key===' ')selectEvent(this,'Job Fair')">💼 Job Fair</div>
+  </div>
+</div>
+
+<div class="search-bar" role="search">
+  <label for="searchField" class="sr-only">Search speakers, sessions, venues</label>
+  <input class="search-field" id="searchField" type="search" placeholder="Search speakers, sessions, venues..." autocomplete="off" aria-label="Search for event content"/>
+  <button class="search-go" onclick="searchGoogle()" aria-label="Search Google">Search →</button>
+</div>
+
+<div class="quick-row" role="toolbar" aria-label="Quick actions">
+  <button class="quick-btn" onclick="scrollToEl('aiChat')" aria-label="Ask AI assistant">
+    <span class="icon" aria-hidden="true">🤖</span><span class="label">Ask AI</span>
+  </button>
+  <button class="quick-btn" onclick="openMaps()" aria-label="Open venue navigation">
+    <span class="icon" aria-hidden="true">🗺️</span><span class="label">Navigate</span>
+  </button>
+  <button class="quick-btn" onclick="addToCalendar()" aria-label="Open schedule in Google Calendar">
+    <span class="icon" aria-hidden="true">📅</span><span class="label">Schedule</span>
+  </button>
+  <button class="quick-btn" onclick="scrollToEl('networking')" aria-label="Go to networking section">
+    <span class="icon" aria-hidden="true">🤝</span><span class="label">Network</span>
+  </button>
+</div>
+
+<div class="main" id="main-content">
+
+  <div class="ticker-bar" role="marquee" aria-label="Live announcements" aria-live="off">
+    <span class="ticker-label" aria-hidden="true">LIVE</span>
+    <span class="ticker-content" aria-hidden="true">
+      🔴 Opening session pushed to 9:30 — grab chai first &nbsp;·&nbsp;
+      📶 WiFi: TF_Guest | ask at the desk if it drops &nbsp;·&nbsp;
+      🍱 Lunch is out — vegetarian counter on the left &nbsp;·&nbsp;
+      🎤 Lightning talk slots still open, sign up at registration &nbsp;·&nbsp;
+      🚌 Last shuttle at 8 PM from Gate 1 &nbsp;·&nbsp;
+      📍 Room 3B moved — it's the second left after the stairs &nbsp;&nbsp;&nbsp;
+      🔴 Opening session pushed to 9:30 — grab chai first &nbsp;·&nbsp;
+      📶 WiFi: TF_Guest | ask at the desk if it drops &nbsp;·&nbsp;
+      🍱 Lunch is out — vegetarian counter on the left &nbsp;·&nbsp;
+      🎤 Lightning talk slots still open, sign up at registration &nbsp;·&nbsp;
+      🚌 Last shuttle at 8 PM from Gate 1 &nbsp;·&nbsp;
+      📍 Room 3B moved — it's the second left after the stairs
+    </span>
+  </div>
+
+  <section id="aiChat" class="chat-card" aria-label="AI Chat Assistant">
+    <div class="chat-top">
+      <div class="ai-avatar" aria-hidden="true">✨</div>
+      <div class="chat-top-info">
+        <strong>EventMind AI</strong>
+        <small id="chatSubtitle">Knows everything about TechFest 2026</small>
+      </div>
+      <div class="online-badge" aria-label="AI is online">
+        <div class="online-dot" aria-hidden="true"></div>Live
+      </div>
+    </div>
+    <div class="messages" id="messages" role="log" aria-label="Chat messages" aria-live="polite"></div>
+    <div class="input-row">
+      <label for="chatInput" class="sr-only">Message EventMind AI</label>
+      <textarea class="chat-input" id="chatInput" rows="1"
+        placeholder="Ask anything about the event..."
+        aria-label="Type your message to EventMind AI"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'">
+      </textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMsg()" aria-label="Send message">→</button>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <section class="card" id="scheduleCard" aria-label="Session Schedule"></section>
+    <section class="card" id="mapsCard" aria-label="Venue Navigation"></section>
+  </div>
+
+  <div class="grid2">
+    <section class="card" id="translateCard" aria-label="Live Translation"></section>
+    <section class="card" id="feedbackCard" aria-label="Session Feedback"></section>
+  </div>
+
+  <section class="card-full" id="networking" aria-label="Attendee Networking"></section>
+  <section class="card-full" id="resourcesCard" aria-label="Event Resources"></section>
+
+  <footer class="footer" role="contentinfo">
+    EventMind · Built for PromptWars: Virtual 2026
+  </footer>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/schedule.js"></script>
+<script src="js/maps.js"></script>
+<script src="js/translate.js"></script>
+<script src="js/feedback.js"></script>
+<script src="js/networking.js"></script>
+<script src="js/resources.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

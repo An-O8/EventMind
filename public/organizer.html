@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>EventMind – Organizer Setup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/base.css"/>
+  <style>
+    .org-wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+    .org-header {
+      margin-bottom: 32px;
+    }
+    .org-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+    .org-header p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .form-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+    .form-section h2 {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .field {
+      margin-bottom: 14px;
+    }
+    .field:last-child { margin-bottom: 0; }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: var(--ink);
+    }
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 400;
+      margin-left: 4px;
+    }
+    input[type="text"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 13px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus {
+      border-color: var(--accent2);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.5;
+    }
+    .sessions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .session-row {
+      display: grid;
+      grid-template-columns: 80px 1fr 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .remove-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .remove-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .add-session-btn {
+      background: none;
+      border: 1.5px dashed var(--border);
+      border-radius: 10px;
+      padding: 9px;
+      width: 100%;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+    .add-session-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+    .submit-btn {
+      width: 100%;
+      background: var(--accent);
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+    .submit-btn:hover { background: #c73a10; transform: translateY(-1px); }
+    .submit-btn:active { transform: none; }
+
+    /* Result box */
+    .result-box {
+      display: none;
+      background: var(--surface);
+      border: 1.5px solid var(--accent3);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-top: 20px;
+      box-shadow: var(--shadow);
+    }
+    .result-box.show { display: block; }
+    .result-box h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--accent3);
+    }
+    .result-box p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .link-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .link-display {
+      flex: 1;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 13px;
+      font-size: 12px;
+      color: var(--ink);
+      word-break: break-all;
+      font-family: monospace;
+      line-height: 1.5;
+    }
+    .copy-btn {
+      background: var(--ink);
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .copy-btn:hover { background: #333; }
+    .copy-btn.copied { background: var(--accent3); }
+    .open-link {
+      display: block;
+      text-align: center;
+      margin-top: 12px;
+      color: var(--accent2);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 10px;
+      border: 1.5px solid rgba(30,111,232,0.2);
+      border-radius: 10px;
+      transition: all 0.15s;
+    }
+    .open-link:hover { background: rgba(30,111,232,0.05); }
+
+    @media (max-width: 500px) {
+      .session-row { grid-template-columns: 70px 1fr auto; }
+      .session-row input:nth-child(3) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav role="navigation" aria-label="Main navigation">
+  <a href="index.html" class="nav-logo" aria-label="EventMind home" style="text-decoration:none;color:inherit">Event<span>Mind</span></a>
+  <div class="nav-event">
+    <strong>Organizer Setup</strong>
+    configure your event
+  </div>
+</nav>
+
+<div class="org-wrap">
+  <div class="org-header">
+    <h1>Set up your event</h1>
+    <p>Fill in your event details. We'll generate a link you can share with attendees — they'll get a fully configured EventMind assistant for your event, no app download needed.</p>
+  </div>
+
+  <!-- Basic info -->
+  <div class="form-section">
+    <h2>Event basics</h2>
+    <div class="field">
+      <label for="eventName">Event name</label>
+      <input type="text" id="eventName" placeholder="e.g. HackDTU 2026, Nasscom Product Conclave" maxlength="60"/>
+    </div>
+    <div class="field">
+      <label for="eventDate">Date</label>
+      <input type="date" id="eventDate"/>
+    </div>
+    <div class="field">
+      <label for="eventVenue">Venue <span class="hint">— full address helps</span></label>
+      <input type="text" id="eventVenue" placeholder="e.g. IIT Delhi, Hauz Khas, New Delhi" maxlength="120"/>
+    </div>
+    <div class="field">
+      <label for="eventWifi">WiFi <span class="hint">— name + password if any</span></label>
+      <input type="text" id="eventWifi" placeholder="e.g. Event_Guest / no password" maxlength="100"/>
+    </div>
+    <div class="field">
+      <label for="eventFood">Food info <span class="hint">— where, what's available</span></label>
+      <input type="text" id="eventFood" placeholder="e.g. Cafeteria Block B, food stalls near Gate 2, veg options available" maxlength="200"/>
+    </div>
+  </div>
+
+  <!-- Sessions -->
+  <div class="form-section">
+    <h2>Schedule <span class="hint">— add up to 8 sessions</span></h2>
+    <div class="sessions-list" id="sessionsList"></div>
+    <button class="add-session-btn" onclick="addSessionRow()">+ Add session</button>
+  </div>
+
+  <!-- Extra notes -->
+  <div class="form-section">
+    <h2>Anything else attendees should know?</h2>
+    <div class="field">
+      <textarea id="extraNotes" placeholder="e.g. Shuttle leaves at 9 PM from Gate 1. Swag pickup at registration desk. Parking in Lot C."></textarea>
+    </div>
+  </div>
+
+  <button class="submit-btn" onclick="generateLink()">Generate attendee link →</button>
+
+  <!-- Result -->
+  <div class="result-box" id="resultBox">
+    <h3>✅ Your event link is ready</h3>
+    <p>Share this with attendees. When they open it, EventMind will be configured for your event automatically.</p>
+    <div class="link-row">
+      <div class="link-display" id="linkDisplay"></div>
+      <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy</button>
+    </div>
+    <a href="#" id="openLink" class="open-link" target="_blank" rel="noopener noreferrer">Preview as attendee →</a>
+  </div>
+</div>
+
+<script>
+  const SESSION_COLORS = ['#e84b1e','#1e6fe8','#18a558','#f5a623','#e84b1e','#1e6fe8','#18a558','#f5a623'];
+
+  function addSessionRow(time='', title='', location='') {
+    const list = document.getElementById('sessionsList');
+    if (list.children.length >= 8) return;
+    const idx = list.children.length;
+    const row = document.createElement('div');
+    row.className = 'session-row';
+    row.innerHTML = `
+      <input type="text" placeholder="09:00" value="${time}" maxlength="5" aria-label="Session time"/>
+      <input type="text" placeholder="Session title" value="${title}" maxlength="60" aria-label="Session title"/>
+      <input type="text" placeholder="Room / location" value="${location}" maxlength="60" aria-label="Session location"/>
+      <button class="remove-btn" onclick="this.parentElement.remove()" aria-label="Remove session">×</button>
+    `;
+    list.appendChild(row);
+  }
+
+  // Start with 3 empty rows
+  addSessionRow('09:00', '', '');
+  addSessionRow('11:00', '', '');
+  addSessionRow('13:00', 'Lunch', '');
+
+  function generateLink() {
+    const name    = document.getElementById('eventName').value.trim();
+    const date    = document.getElementById('eventDate').value;
+    const venue   = document.getElementById('eventVenue').value.trim();
+    const wifi    = document.getElementById('eventWifi').value.trim();
+    const food    = document.getElementById('eventFood').value.trim();
+    const notes   = document.getElementById('extraNotes').value.trim();
+
+    if (!name) { alert('Please enter an event name.'); return; }
+    if (!venue) { alert('Please enter a venue.'); return; }
+
+    // Collect sessions
+    const rows = document.querySelectorAll('.session-row');
+    const sessions = [];
+    rows.forEach((row, i) => {
+      const inputs = row.querySelectorAll('input');
+      const time  = inputs[0].value.trim();
+      const title = inputs[1].value.trim();
+      const loc   = inputs[2].value.trim();
+      if (title) {
+        sessions.push({ time, title, sub: loc, color: SESSION_COLORS[i % SESSION_COLORS.length] });
+      }
+    });
+
+    if (sessions.length === 0) { alert('Add at least one session.'); return; }
+
+    // Format date nicely
+    let dateStr = date;
+    if (date) {
+      const d = new Date(date + 'T00:00:00');
+      dateStr = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // Build chat context string
+    const scheduleText = sessions.map(s => `${s.time} ${s.title}${s.sub ? ' (' + s.sub + ')' : ''}`).join(', ');
+    const chatContext = [
+      `Venue: ${venue}`,
+      dateStr ? `Date: ${dateStr}` : '',
+      `Schedule: ${scheduleText}`,
+      wifi ? `WiFi: ${wifi}` : '',
+      food ? `Food: ${food}` : '',
+      notes ? `Other info: ${notes}` : '',
+    ].filter(Boolean).join('\n');
+
+    const config = {
+      name,
+      date: dateStr || '',
+      venue,
+      sessions,
+      chatContext,
+    };
+
+    const encoded = btoa(encodeURIComponent(JSON.stringify(config)));
+    const url = `${location.origin}${location.pathname.replace('organizer.html', '')}index.html?event=${encoded}`;
+
+    document.getElementById('linkDisplay').textContent = url;
+    document.getElementById('openLink').href = url;
+    document.getElementById('resultBox').classList.add('show');
+    document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  let generatedUrl = '';
+  function copyLink() {
+    const text = document.getElementById('linkDisplay').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
